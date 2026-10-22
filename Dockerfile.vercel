@@ -4,6 +4,17 @@
 # Dockerfile's own directory as the build context, and the Gradle build needs the repo
 # root, so this cannot live under docker/ next to the original.
 #
+# Deliberate deviations from the original, keep them when syncing:
+# - STIRLING_FLAVOR defaults to core, matching the frontend's --mode core: no login
+#   database, which Vercel's ephemeral filesystem could not keep, and no Stirling Cloud
+#   account link or AI engine client.
+# - SYSTEM_ENABLEANALYTICS=false: settings.yml is recreated on every cold start, so the
+#   "ask the admin on first launch" default would never be answered.
+# - SYSTEM_SHOWUPDATE=false: otherwise every browser session asks Stirling's hosted
+#   update service (supabase.stirling.com) for new versions.
+# - STIRLING_PRINT_VERSIONS=false: Vercel fails a cold start whose server is not
+#   accepting connections within ~28s, and Spring alone takes most of that.
+#
 # Listens on 8080: set the PORT project environment variable to 8080 so Vercel routes
 # there (it defaults to 80, which the unprivileged runtime user cannot bind).
 
@@ -45,7 +56,7 @@ RUN gradle dependencies --no-daemon || true
 
 COPY . .
 
-ARG STIRLING_FLAVOR=proprietary
+ARG STIRLING_FLAVOR=core
 ENV STIRLING_FLAVOR=${STIRLING_FLAVOR}
 
 # buildWithFrontend=false → backend-only JAR with API landing page.
@@ -128,6 +139,10 @@ ENV VERSION_TAG=$VERSION_TAG \
     TMP=/tmp/stirling-pdf \
     DBUS_SESSION_BUS_ADDRESS=/dev/null \
     SAL_TMP=/tmp/stirling-pdf/libre
+
+ENV SYSTEM_ENABLEANALYTICS=false \
+    SYSTEM_SHOWUPDATE=false \
+    STIRLING_PRINT_VERSIONS=false
 
 # Metadata labels
 LABEL org.opencontainers.image.title="Stirling-PDF Backend" \

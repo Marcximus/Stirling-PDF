@@ -155,7 +155,11 @@ cleanup() {
 trap cleanup SIGTERM
 trap cleanup EXIT
 
-print_versions
+# Spawning every tool for its version takes seconds, which hosts with a startup
+# deadline (Vercel's container runtime) cannot spare.
+if [ "${STIRLING_PRINT_VERSIONS:-true}" = "true" ]; then
+  print_versions
+fi
 
 run_with_timeout() {
   local secs=$1; shift

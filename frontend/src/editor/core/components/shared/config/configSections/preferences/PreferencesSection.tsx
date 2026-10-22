@@ -8,6 +8,7 @@ import { EditorDefaultsCard } from "@app/components/shared/config/configSections
 import { DownloadsCard } from "@app/components/shared/config/configSections/preferences/DownloadsCard";
 import { SoftwareUpdatesCard } from "@app/components/shared/config/configSections/preferences/SoftwareUpdatesCard";
 import { HotkeysCard } from "@app/components/shared/config/configSections/preferences/HotkeysCard";
+import { isUpdateCardAllowed } from "@app/components/shared/updatePopupGate";
 import type {
   DesktopInstall,
   DesktopUpdateModeControl,
@@ -59,10 +60,8 @@ export default function PreferencesSection({
   const { config } = useAppConfig();
   const startHotkeysOpen = focusIsHotkeys();
 
-  // Same condition the standalone section used: a version to report, or the
-  // desktop updater. Not mounting the card is what skips the update check.
   const showUpdates =
-    !hideUpdateSection && Boolean(config?.appVersion || desktopInstall);
+    !hideUpdateSection && isUpdateCardAllowed(config, Boolean(desktopInstall));
 
   return (
     <div className="settings-section-container">
