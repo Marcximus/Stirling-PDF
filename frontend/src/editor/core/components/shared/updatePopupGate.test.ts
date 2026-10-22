@@ -1,6 +1,9 @@
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { isUpdatePopupAllowed } from "@app/components/shared/updatePopupGate";
+import {
+  isUpdateCardAllowed,
+  isUpdatePopupAllowed,
+} from "@app/components/shared/updatePopupGate";
 
 describe("isUpdatePopupAllowed", () => {
   it("returns false until config has loaded", () => {
@@ -23,5 +26,34 @@ describe("isUpdatePopupAllowed", () => {
 
   it("fails closed when the backend omits the decision (e.g. 401 fallback)", () => {
     expect(isUpdatePopupAllowed({ enableLogin: true }, false)).toBe(false);
+  });
+});
+
+describe("isUpdateCardAllowed", () => {
+  it("always shows for the desktop updater", () => {
+    expect(isUpdateCardAllowed({ shouldShowUpdate: false }, true)).toBe(true);
+  });
+
+  it("shows on the web when there is a version and updates are on", () => {
+    expect(
+      isUpdateCardAllowed(
+        { appVersion: "3.0.1", shouldShowUpdate: true },
+        false,
+      ),
+    ).toBe(true);
+  });
+
+  it("hides on the web when the server has updates off", () => {
+    expect(
+      isUpdateCardAllowed(
+        { appVersion: "3.0.1", shouldShowUpdate: false },
+        false,
+      ),
+    ).toBe(false);
+  });
+
+  it("hides on the web with no version to report", () => {
+    expect(isUpdateCardAllowed({ shouldShowUpdate: true }, false)).toBe(false);
+    expect(isUpdateCardAllowed(null, false)).toBe(false);
   });
 });

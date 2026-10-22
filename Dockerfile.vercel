@@ -10,6 +10,8 @@
 #   account link or AI engine client.
 # - SYSTEM_ENABLEANALYTICS=false: settings.yml is recreated on every cold start, so the
 #   "ask the admin on first launch" default would never be answered.
+# - SYSTEM_SHOWUPDATE=false: otherwise every browser session asks Stirling's hosted
+#   update service (supabase.stirling.com) for new versions.
 #
 # Listens on 8080: set the PORT project environment variable to 8080 so Vercel routes
 # there (it defaults to 80, which the unprivileged runtime user cannot bind).
@@ -136,7 +138,8 @@ ENV VERSION_TAG=$VERSION_TAG \
     DBUS_SESSION_BUS_ADDRESS=/dev/null \
     SAL_TMP=/tmp/stirling-pdf/libre
 
-ENV SYSTEM_ENABLEANALYTICS=false
+ENV SYSTEM_ENABLEANALYTICS=false \
+    SYSTEM_SHOWUPDATE=false
 
 # Metadata labels
 LABEL org.opencontainers.image.title="Stirling-PDF Backend" \
