@@ -12,6 +12,8 @@
 #   "ask the admin on first launch" default would never be answered.
 # - SYSTEM_SHOWUPDATE=false: otherwise every browser session asks Stirling's hosted
 #   update service (supabase.stirling.com) for new versions.
+# - STIRLING_PRINT_VERSIONS=false: Vercel fails a cold start whose server is not
+#   accepting connections within ~28s, and Spring alone takes most of that.
 #
 # Listens on 8080: set the PORT project environment variable to 8080 so Vercel routes
 # there (it defaults to 80, which the unprivileged runtime user cannot bind).
@@ -139,7 +141,8 @@ ENV VERSION_TAG=$VERSION_TAG \
     SAL_TMP=/tmp/stirling-pdf/libre
 
 ENV SYSTEM_ENABLEANALYTICS=false \
-    SYSTEM_SHOWUPDATE=false
+    SYSTEM_SHOWUPDATE=false \
+    STIRLING_PRINT_VERSIONS=false
 
 # Metadata labels
 LABEL org.opencontainers.image.title="Stirling-PDF Backend" \
